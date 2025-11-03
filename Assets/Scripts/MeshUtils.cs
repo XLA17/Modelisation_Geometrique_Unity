@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Modeling.MeshTools
 {
     public class MeshUtils
     {
-        private static int AddVertex(List<Vector3> vertices, Vector3 v)
+        public static int AddVertex(List<Vector3> vertices, Vector3 v)
         {
             if (!vertices.Contains(v))
             {
@@ -17,7 +18,7 @@ namespace Modeling.MeshTools
             return vertices.IndexOf(v);
         }
 
-        private static void AddTriangle(List<int> triangles, int vertex1Index, int vertex2Index, int vertex3Index)
+        public static void AddTriangle(List<int> triangles, int vertex1Index, int vertex2Index, int vertex3Index)
         {
             triangles.Add(vertex1Index);
             triangles.Add(vertex2Index);
@@ -503,6 +504,57 @@ namespace Modeling.MeshTools
             AssetDatabase.Refresh();
 
             Debug.Log($"Mesh sauvegardé : {assetPath}");
+        }
+
+        public static Mesh CreateSpecialMesh(List<Vector3> vertices, List<int> triangles)
+        {
+            Vector3 sum = Vector3.zero;
+
+            foreach (Vector3 v in vertices)
+            {
+                sum += v;
+            }
+
+            Vector3 center = sum / vertices.Count;
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                vertices[i] -= center;
+            }
+
+            float max = 0f;
+
+            foreach (Vector3 v in vertices)
+            {
+                if (v.x > max)
+                {
+                    max = v.x;
+                }
+                if (v.y > max)
+                {
+                    max = v.y;
+                }
+                if (v.z > max)
+                {
+                    max = v.z;
+                }
+            }
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                vertices[i] /= max;
+            }
+
+            Mesh mesh = new()
+            {
+                vertices = vertices.ToArray(),
+                triangles = triangles.ToArray()
+            };
+
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+
+            return mesh;
         }
     }
 }

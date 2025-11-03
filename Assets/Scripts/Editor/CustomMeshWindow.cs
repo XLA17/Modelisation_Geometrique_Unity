@@ -44,7 +44,7 @@ public class CustomMeshWindow : EditorWindow
     private float coneTruncHeight = 1f;
     private int coneMeridiansTrunc = 3;
 
-[MenuItem("Generate/Mesh")]
+    [MenuItem("Generate/Mesh")]
     public static void ShowWindow()
     {
         // Ouvre la fenêtre
