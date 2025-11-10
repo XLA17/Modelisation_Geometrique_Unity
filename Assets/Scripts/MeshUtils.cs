@@ -1,9 +1,13 @@
 ﻿using NUnit.Framework.Internal;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 namespace Modeling.MeshTools
 {
@@ -25,6 +29,36 @@ namespace Modeling.MeshTools
             triangles.Add(vertex3Index);
         }
 
+        public static List<Vector3> CalculateNormals(List<Vector3> vertices, List<int> triangles)
+        {
+            List<Vector3> normals = new();
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                Vector3 normalSum = Vector3.zero;
+                int faceCount = 0;
+
+                for (int j = 0; j < triangles.Count; j += 3)
+                {
+                    if (triangles[j] == i || triangles[j+1] == i || triangles[j+2] == i)
+                    {
+                        Vector3 v1 = vertices[triangles[j]];
+                        Vector3 v2 = vertices[triangles[j+1]];
+                        Vector3 v3 = vertices[triangles[j+2]];
+                        Vector3 vd1 = v2 - v1;
+                        Vector3 vd2 = v3 - v1;
+                        Vector3 normalTriangle = Vector3.Cross(vd1, vd2);
+                        normalTriangle.Normalize();
+                        normalSum += normalTriangle;
+                        faceCount++;
+                    }
+                }
+                Vector3 normalVertex = normalSum / faceCount;
+                normalVertex.Normalize();
+                normals.Add(normalVertex);
+            }
+
+            return normals;
+        }
         public static Mesh CreateRectMesh(float width, float height)
         {
             Mesh mesh = new();
@@ -548,13 +582,28 @@ namespace Modeling.MeshTools
             Mesh mesh = new()
             {
                 vertices = vertices.ToArray(),
-                triangles = triangles.ToArray()
+                triangles = triangles.ToArray(),
+                normals = CalculateNormals(vertices, triangles).ToArray()
             };
 
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
+            //mesh.RecalculateBounds();
 
             return mesh;
+        }
+
+        public static Mesh RemoveTriangles(Mesh mesh, int triangleToRemoveCount)
+        {
+            List<int> newTrianglesList = mesh.triangles.ToList();
+            newTrianglesList.RemoveRange(mesh.triangles.Length - triangleToRemoveCount, triangleToRemoveCount);
+
+            Mesh newMesh = new()
+            {
+                vertices = mesh.vertices.ToArray(),
+                triangles = newTrianglesList.ToArray(),
+                normals = mesh.normals.ToArray()
+            };
+
+            return newMesh;
         }
     }
 }

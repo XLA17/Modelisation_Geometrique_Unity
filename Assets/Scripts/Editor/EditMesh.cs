@@ -3,24 +3,24 @@ using UnityEditor;
 using Modeling.MeshTools;
 using Modeling;
 
-public class OFF_FileWindow : EditorWindow
+public class EditMesh : EditorWindow
 {
     private string pathName;
-    private string meshName = "Special Mesh";
+    private int triangleToRemoveCount;
 
-    [MenuItem("Generate/From OFF File")]
+    [MenuItem("Generate/Edit mesh")]
     public static void ShowWindow()
     {
         // Ouvre la fenêtre
-        GetWindow<OFF_FileWindow>("Generate From OFF File");
+        GetWindow<EditMesh>("Remove a certain number of triangles of a mesh");
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("Rect parameters", EditorStyles.boldLabel);
+        GUILayout.Label("Edit mesh parameters", EditorStyles.boldLabel);
 
         pathName = EditorGUILayout.TextField("Path of the file", pathName);
-        meshName = EditorGUILayout.TextField("Name of the mesh", meshName);
+        triangleToRemoveCount = EditorGUILayout.IntField("Number of triangles to remove", triangleToRemoveCount);
 
         GUILayout.Space(10);
 
@@ -29,7 +29,7 @@ public class OFF_FileWindow : EditorWindow
             if (pathName != null)
             {
                 Mesh mesh = OFF_File.ReadFile(pathName);
-                MeshUtils.GenerateMesh(mesh, meshName);
+                MeshUtils.RemoveTriangles(mesh, triangleToRemoveCount);
             }
         }
     }
