@@ -501,18 +501,12 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
-        public static void GenerateMesh(Mesh mesh, string name)
+        public static void GenerateMesh(Mesh mesh, string name, string folderPath = "Assets/Meshs")
         {
-            string folderPath = "Assets/Meshs";
             string assetPath = $"{folderPath}/{name}.asset";
 
             // Check and create folder if needed
-            if (!AssetDatabase.IsValidFolder(folderPath))
-            {
-                string parent = "Assets";
-                string subFolder = "Meshs";
-                AssetDatabase.CreateFolder(parent, subFolder);
-            }
+            //CreateFoldersRecursively(folderPath);
 
             // Confirmation overlay if already exists
             if (AssetDatabase.LoadAssetAtPath<Mesh>(assetPath) != null)
@@ -538,6 +532,25 @@ namespace Modeling.MeshTools
             AssetDatabase.Refresh();
 
             Debug.Log($"Mesh sauvegardé : {assetPath}");
+        }
+        public static void CreateFoldersRecursively(string fullPath)
+        {
+            // fullPath must be a Unity path, ex : "Assets/Meshs/Objets/Data"
+            string[] parts = fullPath.Split('/');
+
+            string current = parts[0];
+
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string next = current + "/" + parts[i];
+
+                if (!AssetDatabase.IsValidFolder(next))
+                {
+                    AssetDatabase.CreateFolder(current, parts[i]);
+                }
+
+                current = next;
+            }
         }
 
         public static Mesh CreateSpecialMesh(List<Vector3> vertices, List<int> triangles)
@@ -594,7 +607,8 @@ namespace Modeling.MeshTools
         public static Mesh RemoveTriangles(Mesh mesh, int triangleToRemoveCount)
         {
             List<int> newTrianglesList = mesh.triangles.ToList();
-            newTrianglesList.RemoveRange(mesh.triangles.Length - triangleToRemoveCount, triangleToRemoveCount);
+            newTrianglesList.RemoveRange(mesh.triangles.Length - (triangleToRemoveCount * 3), triangleToRemoveCount * 3);
+            Debug.Log(newTrianglesList);
 
             Mesh newMesh = new()
             {

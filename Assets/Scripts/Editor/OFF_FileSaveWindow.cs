@@ -5,9 +5,11 @@ using Modeling;
 
 public class OFF_FileSaveWindow : EditorWindow
 {
-    private string meshName = "mesh";
+    private string selectedFilePath = "";
+    private string offFileName = "New off file";
     private bool removeTriangles = false;
     private int trianglesToRemoveCount = 0;
+    private string selectedDirectory = "Assets/OffFiles";
 
     [MenuItem("OFF File/Save OFF File")]
     public static void ShowWindow()
@@ -18,9 +20,57 @@ public class OFF_FileSaveWindow : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.Label("Save parameters", EditorStyles.boldLabel);
+        GUILayout.Label("Mesh selection", EditorStyles.boldLabel);
 
-        meshName = EditorGUILayout.TextField("Name of the mesh", meshName);
+        if (GUILayout.Button("Select a mesh..."))
+        {
+            string path = EditorUtility.OpenFilePanel(
+                "Select a mesh",
+                "Assets/Meshs",
+                "asset"
+            );
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                if (!path.StartsWith(Application.dataPath))
+                {
+                    Debug.LogError("The selected folder must be in the folder Assets !");
+                    return;
+                }
+
+                // conversion in relative path
+                selectedFilePath = "Assets" + path.Substring(Application.dataPath.Length);
+            }
+        }
+        GUILayout.Label("Mesh selected: " + selectedFilePath, EditorStyles.miniLabel);
+
+        GUILayout.Space(10);
+
+        GUILayout.Label("File export parameters", EditorStyles.boldLabel);
+
+        offFileName = EditorGUILayout.TextField("Name of the file", offFileName);
+        if (GUILayout.Button("Select a directory..."))
+        {
+            string path = EditorUtility.OpenFolderPanel(
+                "Select a folder",
+                "Assets/OffFiles",
+                ""
+            );
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                if (!path.StartsWith(Application.dataPath))
+                {
+                    Debug.LogError("The selected folder must be in the folder Assets !");
+                    return;
+                }
+
+                // conversion in relative path
+                selectedDirectory = "Assets" + path.Substring(Application.dataPath.Length);
+            }
+        }
+        GUILayout.Label("Directory selected: " + selectedDirectory, EditorStyles.miniLabel);
+
         removeTriangles = EditorGUILayout.Toggle("Remove triangles", removeTriangles);
 
         if (removeTriangles)
@@ -35,8 +85,9 @@ public class OFF_FileSaveWindow : EditorWindow
         if (GUILayout.Button("Save"))
         {
 
-            Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Meshs/" + meshName + ".asset");
-            OFF_File.WriteFile(meshName, mesh);
+            Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(selectedFilePath);
+            Mesh meshTrunc =MeshUtils.RemoveTriangles(mesh, trianglesToRemoveCount);
+            OFF_File.WriteFile(offFileName, meshTrunc, selectedDirectory);
         }
     }
 }

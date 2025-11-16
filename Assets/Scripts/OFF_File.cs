@@ -43,20 +43,11 @@ namespace Modeling
             return MeshUtils.CreateSpecialMesh(vertices, triangles);
         }
 
-        public static void WriteFile(string filename, Mesh mesh)
+        public static void WriteFile(string filename, Mesh mesh, string folderPath = "Assets/OffFiles")
         {
-            string folderPath = "Assets/off";
             string assetPath = $"{folderPath}/{filename}.off";
 
-            // Check and create folder if needed
-            if (!AssetDatabase.IsValidFolder(folderPath))
-            {
-                string parent = "Assets";
-                string subFolder = "off";
-                AssetDatabase.CreateFolder(parent, subFolder);
-            }
-
-            //// Confirmation overlay if already exists
+            // Confirmation overlay if already exists
             //if (AssetDatabase.LoadAssetAtPath<Mesh>(assetPath) != null)
             //{
             //    bool confirm = EditorUtility.DisplayDialog(
@@ -78,19 +69,19 @@ namespace Modeling
             //AssetDatabase.CreateAsset(mesh, assetPath);
             //AssetDatabase.SaveAssets();
 
-            using (StreamWriter sw = new StreamWriter(assetPath + ".off"))
+            using (StreamWriter sw = new StreamWriter(assetPath))
             {
                 sw.WriteLine("OFF");
-                sw.WriteLine(mesh.vertices.Count() + " " + mesh.triangles.Count() + " " + mesh.normals.Count());
+                sw.WriteLine(mesh.vertices.Count() + " " + (mesh.triangles.Count() / 3) + " " + mesh.normals.Count());
 
                 foreach (Vector3 v in mesh.vertices)
                 {
                     sw.WriteLine(v.x + " " + v.y + " " + v.z);
                 }
 
-                foreach (int t in mesh.triangles)
+                for (int i = 0; i < mesh.triangles.Count(); i += 3)
                 {
-                    sw.WriteLine(t);
+                    sw.WriteLine("3 " + mesh.triangles[i] + " " + mesh.triangles[i + 1] + " " + mesh.triangles[i + 2]);
                 }
 
                 foreach (Vector3 n in mesh.normals)
