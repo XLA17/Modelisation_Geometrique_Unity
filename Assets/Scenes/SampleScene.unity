@@ -552,7 +552,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Voxel
   cubePrefab: {fileID: 3422650983637908121, guid: 74f8d93faade82b43854f76e7ca166b2, type: 3}
   radius: 1
-  depth: 5
+  depth: 3
 --- !u!4 &1304531625
 Transform:
   m_ObjectHideFlags: 0

@@ -69,9 +69,9 @@ public class Voxel : MonoBehaviour
 
             if (distanceBetweenCenters + Mathf.Sqrt(3f) * cubeWidth / 2 < radius)
             {
-                GameObject cube = Instantiate(cubePrefab, cubeCenter, Quaternion.identity);
-                cube.transform.localScale = Vector3.one * cubeScale;
-                cube.transform.parent = transform;
+                //GameObject cube = Instantiate(cubePrefab, cubeCenter, Quaternion.identity);
+                //cube.transform.localScale = Vector3.one * cubeScale;
+                //cube.transform.parent = transform;
             }
             else if (distanceBetweenCenters - Mathf.Sqrt(3f) * cubeWidth / 2 > radius)
             {
