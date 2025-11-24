@@ -8,13 +8,14 @@ public class SphereVoxel : MonoBehaviour
     [SerializeField] private float octreeWidth;
     [SerializeField] private int octreeDepth;
     [SerializeField] private List<Sphere> spheres;
+    [SerializeField] private bool intersection;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
-        Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres);
+        Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, intersection);
 
         RecursiveInstantiate(octree.rootNode.nodes);
     }
@@ -61,17 +62,20 @@ public class Octree
     private Vector3 center;
     private float width;
     private int depth;
+    private bool intersection;
     public OctreeNode rootNode;
     public List<Sphere> spheres;
 
-    public Octree(Vector3 center, float width, int depth, List<Sphere> spheres)
+    public Octree(Vector3 center, float width, int depth, List<Sphere> spheres, bool intersection)
     {
         this.center = center;
         this.width = width;
         this.depth = depth;
         this.spheres = spheres;
+        this.intersection = intersection;
 
-        rootNode = new(center, width, width, depth, spheres); // mouais
+        rootNode = new(center, width, width, depth, spheres, intersection);
+        this.intersection = intersection;
     }
 }
 
@@ -80,18 +84,20 @@ public class OctreeNode
     private List<Sphere> spheres;
     public Vector3 center;
     private float width;
+    private bool intersection;
     public float scale;
 
     public int depth;
     public List<OctreeNode> nodes;
 
-    public OctreeNode(Vector3 center, float width, float scale, int depth, List<Sphere> spheres)
+    public OctreeNode(Vector3 center, float width, float scale, int depth, List<Sphere> spheres, bool intersection)
     {
         this.center = center;
         this.width = width;
         this.scale = scale;
         this.depth = depth;
         this.spheres = spheres;
+        this.intersection = intersection;
 
         nodes = CreateNodes();
     }
@@ -130,16 +136,30 @@ public class OctreeNode
             float cubeWidth = width / 2;
             float cubeScale = scale / 2;
 
+            bool isIntersection = true;
+            bool isUnion = true;
             for (int j = 0; j < spheres.Count; j++)
             {
                 float distanceBetweenCenters = Vector3.Distance(spheres[j].center, cubeCenter);
 
-                if (distanceBetweenCenters + Mathf.Sqrt(3f) * cubeWidth / 2 >= spheres[j].radius && distanceBetweenCenters - Mathf.Sqrt(3f) * cubeWidth / 2 <= spheres[j].radius)
+                if (distanceBetweenCenters + Mathf.Sqrt(3f) * cubeWidth / 2 < spheres[j].radius)
                 {
-                    OctreeNode node = new(cubeCenter, cubeWidth, cubeScale, depth - 1, spheres);
-                    nodes.Add(node);
-                    break;
-                }
+                    isUnion = true;
+                } else if (distanceBetweenCenters - Mathf.Sqrt(3f) * cubeWidth / 2 > spheres[j].radius)
+                {
+                    isIntersection = false;
+                    if (intersection) break;
+                    isUnion = false;
+                } else
+                {
+                    isUnion = true;
+                } 
+            }
+
+            if ((intersection && isIntersection) || (!intersection && isUnion))
+            {
+                OctreeNode node = new(cubeCenter, cubeWidth, cubeScale, depth - 1, spheres, intersection);
+                nodes.Add(node);
             }
         }
 
