@@ -9,6 +9,7 @@ public class SphereVoxel : MonoBehaviour
     [SerializeField] private int octreeDepth;
     [SerializeField] private List<Sphere> spheres;
     [SerializeField] private bool intersection;
+    [SerializeField, Range(0, 1)] private float coefWidthCube;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -17,10 +18,10 @@ public class SphereVoxel : MonoBehaviour
 
         Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, intersection);
 
-        RecursiveInstantiate(octree.rootNode.nodes);
+        RecursiveInstantiate(octree.rootNode.nodes, coefWidthCube);
     }
 
-    void RecursiveInstantiate(List<OctreeNode> nodes)
+    void RecursiveInstantiate(List<OctreeNode> nodes, float coefWidthCube)
     {
         Debug.Log("RecursiveInstantiate");
         foreach(OctreeNode node in nodes)
@@ -28,12 +29,12 @@ public class SphereVoxel : MonoBehaviour
             if (node.depth <= 0)
             {
                 GameObject cube = Instantiate(cubePrefab, node.center, Quaternion.identity);
-                cube.transform.localScale = Vector3.one * node.scale;
+                cube.transform.localScale = Vector3.one * node.scale * coefWidthCube;
                 cube.transform.parent = transform;
             }
             else
             {
-                RecursiveInstantiate(node.nodes);
+                RecursiveInstantiate(node.nodes, coefWidthCube);
             }
         }
     }

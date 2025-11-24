@@ -560,6 +560,7 @@ MonoBehaviour:
   - center: {x: 0, y: 0, z: 0}
     radius: 1
   intersection: 1
+  coefWidthCube: 1
 --- !u!4 &1304531625
 Transform:
   m_ObjectHideFlags: 0
