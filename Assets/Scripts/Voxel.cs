@@ -11,11 +11,13 @@ public class SphereVoxel : MonoBehaviour
     [SerializeField] private bool intersection;
     [SerializeField, Range(0, 1)] private float coefWidthCube;
 
+    private GameObject sphere;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        Destroy(sphere.GetComponent<Collider>());
         Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, intersection);
 
         RecursiveInstantiate(octree.rootNode.nodes, coefWidthCube);
@@ -23,7 +25,6 @@ public class SphereVoxel : MonoBehaviour
 
     void RecursiveInstantiate(List<OctreeNode> nodes, float coefWidthCube)
     {
-        Debug.Log("RecursiveInstantiate");
         foreach(OctreeNode node in nodes)
         {
             if (node.depth <= 0)
@@ -42,6 +43,10 @@ public class SphereVoxel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, 5000)) {
+            sphere.transform.position = hit.point;
+        }
     }
 }
 
