@@ -551,8 +551,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Voxel
   cubePrefab: {fileID: 3422650983637908121, guid: 74f8d93faade82b43854f76e7ca166b2, type: 3}
-  radius: 1
-  depth: 3
+  octreeCenter: {x: 0, y: 0, z: 0}
+  octreeWidth: 1
+  octreeDepth: 5
+  spheres:
+  - center: {x: -1, y: 0, z: 0}
+    radius: 1
+  - center: {x: 1, y: 0, z: 0}
+    radius: 1
 --- !u!4 &1304531625
 Transform:
   m_ObjectHideFlags: 0
