@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,16 +14,17 @@ public class SphereVoxel : MonoBehaviour
     [SerializeField, Range(0, 1)] private float coefWidthCube;
     [SerializeField] private GameObject spheree;
 
-    private GameObject sphere;
+    //private GameObject sphere;
     private List<GameObject> cubes = new();
+    //private Octree octree;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         Instantiate(spheree);
 
-        sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        Destroy(sphere.GetComponent<Collider>());
+        //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //Destroy(sphere.GetComponent<Collider>());
         Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, intersection);
 
         RecursiveInstantiate(octree.rootNode.nodes, coefWidthCube);
@@ -63,10 +65,10 @@ public class SphereVoxel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, 5000)) {
-            sphere.transform.position = hit.point;
-        }
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //if (Physics.Raycast(ray, out RaycastHit hit, 5000)) {
+        //    sphere.transform.position = hit.point;
+        //}
 
         //for (int i = 0; i < cubes.Count; i++)
         //{
@@ -173,33 +175,43 @@ public class OctreeNode
             float cubeWidth = width / 2;
             float cubeScale = scale / 2;
 
-            bool isIntersection = true;
+            bool inAllSphere = true;
             bool isUnion = true;
             for (int j = 0; j < spheres.Count; j++)
             {
                 float distanceBetweenCenters = Vector3.Distance(spheres[j].center, cubeCenter);
 
-                if (distanceBetweenCenters + Mathf.Sqrt(3f) * cubeWidth / 2 < spheres[j].radius)
-                {
-                    isUnion = true;
-                } else if (distanceBetweenCenters - Mathf.Sqrt(3f) * cubeWidth / 2 > spheres[j].radius)
-                {
-                    isIntersection = false;
-                    if (intersection) break;
-                    isUnion = false;
-                } else
-                {
-                    isUnion = true;
-                } 
-            }
+                //if (distanceBetweenCenters < Mathf.Sqrt(3f) * cubeWidth / 2 + spheres[j].radius)
+                //{
+                //    isUnion = true;
+                //}
+                //else if (distanceBetweenCenters > Mathf.Sqrt(3f) * cubeWidth / 2 + spheres[j].radius)
+                //{
+                //    isIntersection = false;
+                //    if (intersection) continue;
+                //    isUnion = false;
+                //}
+                //else
+                //{
+                //    isUnion = true;
+                //}
 
-            if ((intersection && isIntersection) || (!intersection && isUnion))
-            {
-                OctreeNode node = new(cubeCenter, cubeWidth, cubeScale, depth - 1, spheres, intersection);
-                nodes.Add(node);
-            }
+                if (distanceBetweenCenters + Mathf.Sqrt(3f) * cubeWidth / 2 >= spheres[j].radius && distanceBetweenCenters - Mathf.Sqrt(3f) * cubeWidth / 2 <= spheres[j].radius)
+                {
+                    OctreeNode node = new(cubeCenter, cubeWidth, cubeScale, depth - 1, spheres, intersection);
+                    nodes.Add(node);
+                    break;
+                }
+        }
+
+            //if ((intersection && isIntersection) || (!intersection && isUnion))
+            //{
+            //    OctreeNode node = new(cubeCenter, cubeWidth, cubeScale, depth - 1, spheres, intersection);
+            //    nodes.Add(node);
+            //}
         }
 
         return nodes;
     }
-} 
+
+}
