@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SphereVoxel : MonoBehaviour
 {
@@ -10,17 +11,36 @@ public class SphereVoxel : MonoBehaviour
     [SerializeField] private List<Sphere> spheres;
     [SerializeField] private bool intersection;
     [SerializeField, Range(0, 1)] private float coefWidthCube;
+    [SerializeField] private GameObject spheree;
 
     private GameObject sphere;
+    private List<GameObject> cubes = new();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Instantiate(spheree);
+
         sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Destroy(sphere.GetComponent<Collider>());
         Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, intersection);
 
         RecursiveInstantiate(octree.rootNode.nodes, coefWidthCube);
+
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                for (int k = 0; k < 20; k++)
+                {
+                    Debug.Log("tet");
+                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    cube.GetComponent<MeshRenderer>().enabled = false;
+                    cube.transform.position = new Vector3(i, j, k);
+                    cubes.Add(cube);
+                }
+            }
+        }
     }
 
     void RecursiveInstantiate(List<OctreeNode> nodes, float coefWidthCube)
@@ -47,6 +67,17 @@ public class SphereVoxel : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, 5000)) {
             sphere.transform.position = hit.point;
         }
+
+        //for (int i = 0; i < cubes.Count; i++)
+        //{
+        //    Collider a = cubes[i].GetComponent<Collider>();
+        //    Collider b = spheree.GetComponent<Collider>();
+
+        //    if (a.Intersects(b.bounds))
+        //    {
+        //        cubes[i].SetActive(true);
+        //    }
+        //}
     }
 }
 
