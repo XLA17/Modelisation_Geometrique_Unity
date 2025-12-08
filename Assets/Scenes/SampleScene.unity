@@ -394,13 +394,14 @@ GameObject:
   - component: {fileID: 602225509}
   - component: {fileID: 602225508}
   - component: {fileID: 602225507}
+  - component: {fileID: 602225510}
   m_Layer: 0
   m_Name: TestObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &602225507
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -456,7 +457,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 602225506}
-  m_Mesh: {fileID: 4300000, guid: 007600a997e326d478352992e8ccb749, type: 2}
+  m_Mesh: {fileID: 4300000, guid: eb237962ad8eea840a875f1550191e47, type: 2}
 --- !u!4 &602225509
 Transform:
   m_ObjectHideFlags: 0
@@ -472,6 +473,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &602225510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602225506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfccd1faa09596448ae4355f1aab9571, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Simplification
+  epsilon: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,7 +551,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1304531624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -555,12 +569,12 @@ MonoBehaviour:
   octreeWidth: 3
   octreeDepth: 5
   spheres:
-  - center: {x: -1, y: 0, z: 0}
+  - center: {x: 1, y: 0, z: 0}
     radius: 1
   - center: {x: 0, y: 0, z: 0}
     radius: 1
   intersection: 1
-  coefWidthCube: 1
+  coefWidthCube: 0.8
   spheree: {fileID: 8925568051956630743, guid: d1dccd1aa5ac8184a880eeadc235940b, type: 3}
 --- !u!4 &1304531625
 Transform:
