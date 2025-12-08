@@ -485,7 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfccd1faa09596448ae4355f1aab9571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Simplification
-  epsilon: 1
+  epsilon: 0.2
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

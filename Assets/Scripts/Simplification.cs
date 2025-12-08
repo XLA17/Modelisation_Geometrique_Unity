@@ -1,13 +1,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Cell
+{
+    public Vector3 minPosition;
+    public Dictionary<Vector3, int> vertexAndWeight;
+    public Vector3? representativePoint;
+
+    public Cell(Vector3 minPosition)
+    {
+        this.minPosition = minPosition;
+        representativePoint = null;
+        vertexAndWeight = new Dictionary<Vector3, int>();
+    }
+
+    public void CalculateRepresentativePoint()
+    {
+        Vector3 vTot = Vector3.zero;
+        int weightTot = 0;
+
+        foreach (KeyValuePair<Vector3, int> entry in vertexAndWeight)
+        {
+            vTot += entry.Key;
+            weightTot += entry.Value;
+        }
+
+        representativePoint = vTot / weightTot;
+    }
+}
+
 public class Simplification : MonoBehaviour
 {
     [SerializeField] private float epsilon;
+    [SerializeField] private bool debugBox;
+    [SerializeField] private bool debugRepresentativePoint;
 
     private MeshFilter mf;
     private float minX, minY, minZ, maxX, maxY, maxZ;
-    private List<Vector3> cubePositionsList;
+    private List<Cell> cubePositionsList;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,7 +49,7 @@ public class Simplification : MonoBehaviour
         maxX = float.NegativeInfinity;
         maxY = float.NegativeInfinity;
 
-        cubePositionsList = new List<Vector3>();
+        cubePositionsList = new();
 
         InitBox();
     }
@@ -48,49 +78,88 @@ public class Simplification : MonoBehaviour
             else if (vertex.z > maxZ) maxZ = vertex.z;
         }
 
-        for (int i = 0; i < (maxX - minX) / epsilon; i++)
+        float meshXLength = (maxX - minX);
+        int cubesXCount = (int)(meshXLength / epsilon);
+        float minXBox = (cubesXCount * epsilon - meshXLength) / 2;
+        float meshYLength = (maxY - minY);
+        int cubesYCount = (int)(meshYLength / epsilon);
+        float minYBox = (cubesYCount * epsilon - meshYLength) / 2;
+        float meshZLength = (maxZ - minZ);
+        int cubesZCount = (int)(meshZLength / epsilon);
+        float minZBox = (cubesZCount * epsilon - meshZLength) / 2;
+
+        List<Vector3> meshVerticesCopy = new(mf.sharedMesh.vertices);
+
+
+        for (int i = 0; i < cubesXCount+1; i++)
         {
-            for (int j = 0; j < (maxY - minY) / epsilon; j++)
+            for (int j = 0; j < cubesYCount+1; j++)
             {
-                for (int k = 0; k < (maxZ - minZ) / epsilon; k++)
+                for (int k = 0; k < cubesZCount+1; k++)
                 {
-                    cubePositionsList.Add(new Vector3(minX + i * epsilon, minY + j * epsilon, minZ + k * epsilon));
+                    float x = minX + minXBox + i * epsilon;
+                    float y = minY + minYBox + j * epsilon;
+                    float z = minZ + minZBox + k * epsilon;
+                    Cell cell = new(new Vector3(x, y, z));
+
+                    for (int vi = 0; vi < meshVerticesCopy.Count; vi++)
+                    {
+                        Vector3 v = meshVerticesCopy[vi];
+                        if (v.x >= x && v.x <= x + epsilon &&
+                            v.y >= y && v.y <= y + epsilon &&
+                            v.z >= z && v.z <= z + epsilon)
+                        {
+                            // calculate weight with sharedMesh.triangles
+                            cell.vertexAndWeight.Add(v, 1);
+                            meshVerticesCopy.RemoveAt(vi);
+                        }
+                    }
+
+                    cubePositionsList.Add(cell);
                 }
             }
         }
+
+        foreach (Cell c in cubePositionsList)
+        {
+            c.CalculateRepresentativePoint();
+        }
     }
 
-    private void OnDrawGizmos()
+    //public void CalculateNewVertices()
+    //{
+    //    if (cubePositionsList == null)
+    //    {
+    //        return;
+    //    }
+
+    //    foreach (Vector3 v in cubePositionsList)
+    //    {
+
+    //    }
+    //}
+
+    private void OnDrawGizmosSelected()
     {
         if (cubePositionsList == null)
         {
             return;
         }
 
-        foreach (Vector3 v in cubePositionsList)
+        foreach (Cell c in cubePositionsList)
         {
-            Vector3 A = v;
-            Vector3 B = v + new Vector3(epsilon, 0, 0);
-            Vector3 C = v + new Vector3(epsilon, epsilon, 0);
-            Vector3 D = v + new Vector3(0, epsilon, 0);
-            Vector3 E = v + new Vector3(0, 0, epsilon);
-            Vector3 F = v + new Vector3(epsilon, 0, epsilon);
-            Vector3 G = v + new Vector3(epsilon, epsilon, epsilon);
-            Vector3 H = v + new Vector3(0, epsilon, epsilon);
+            Vector3 v = c.minPosition;
 
-            // Dessiner les 12 arêtes
-            Debug.DrawLine(A, B, Color.white);
-            Debug.DrawLine(B, C, Color.white);
-            Debug.DrawLine(C, D, Color.white);
-            Debug.DrawLine(D, A, Color.white);
-            Debug.DrawLine(E, F, Color.white);
-            Debug.DrawLine(F, G, Color.white);
-            Debug.DrawLine(G, H, Color.white);
-            Debug.DrawLine(H, E, Color.white);
-            Debug.DrawLine(A, E, Color.white);
-            Debug.DrawLine(B, F, Color.white);
-            Debug.DrawLine(C, G, Color.white);
-            Debug.DrawLine(D, H, Color.white);
+            if (debugBox)
+            {
+                Vector3 center = new Vector3(v.x + epsilon / 2, v.y + epsilon / 2, v.z + epsilon / 2);
+                Gizmos.DrawWireCube(center, Vector3.one * epsilon);
+            }
+
+            if (debugRepresentativePoint)
+            {
+                Gizmos.DrawSphere(c.representativePoint.Value, 0.05f);
+            }
         }
     }
 }
