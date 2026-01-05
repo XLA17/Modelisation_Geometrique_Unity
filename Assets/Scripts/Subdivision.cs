@@ -80,15 +80,6 @@ public class Subdivision : MonoBehaviour
         }
     }
 
-    int IndexOf(Mesh mesh, Vector3 v)
-    {
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            if (mesh.vertices[i] == v) return i;
-        }
-        return -1;
-    }
-
     Mesh Loop(Mesh mesh)
     {
         List<Vector3> newVertices = new();
@@ -115,6 +106,9 @@ public class Subdivision : MonoBehaviour
             MeshUtils.AddTriangle(newTriangles, indexV4, indexV2, indexV5);
             MeshUtils.AddTriangle(newTriangles, indexV6, indexV5, indexV3);
             MeshUtils.AddTriangle(newTriangles, indexV4, indexV5, indexV6);
+            //if (newTriangles[i] == -1) Debug.Log("1-----------1");
+            //if (newTriangles[i + 1] == -1) Debug.Log("2-----------1");
+            //if (newTriangles[i + 2] == -1) Debug.Log("3-----------1");
         }
 
         List<Vector3> newVertices2 = new(newVertices);
@@ -122,13 +116,14 @@ public class Subdivision : MonoBehaviour
         {
             List<int> neighborsIndex = GetNeighborVertices(newTriangles, i);
 
-            float a = Mathf.Pow(3 + 2 * Mathf.Cos(2*Mathf.PI / neighborsIndex.Count), 2) / 32 - 0.25f;
-            float b = (1 - a) / neighborsIndex.Count;
+            //float a = Mathf.Pow(3 + 2 * Mathf.Cos(2*Mathf.PI / neighborsIndex.Count), 2) / 32 - 0.25f;
+            //float b = (1 - a) / neighborsIndex.Count;
 
             Vector3 sum = newVertices[i];
 
             foreach (var neighborIndex in neighborsIndex)
             {
+                Debug.Log(neighborIndex);
                 sum += newVertices[neighborIndex];
             }
 
@@ -157,6 +152,7 @@ public class Subdivision : MonoBehaviour
         {
             if (triangles[i] == vertexIndex || triangles[i+1] == vertexIndex || triangles[i+2] == vertexIndex)
             {
+                
                 AddVertex(neighborsIndex, triangles[i]);
                 AddVertex(neighborsIndex, triangles[i+1]);
                 AddVertex(neighborsIndex, triangles[i+2]);

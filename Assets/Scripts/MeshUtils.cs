@@ -16,6 +16,7 @@ namespace Modeling.MeshTools
         public static int AddVertex(List<Vector3> vertices, Vector3 v)
         {
             if (!Contains(vertices, v)) vertices.Add(v);
+            //if (!vertices.Contains(v)) vertices.Add(v);
 
             return vertices.IndexOf(v);
         }
@@ -24,7 +25,8 @@ namespace Modeling.MeshTools
         {
             for (int i = 0; i < vertices.Count; i++)
             {
-                if (Vector3.Distance(vertices[i], v) < 0.001f) return true;
+                //Debug.Log("already here : "+ vertices[i] + "  :  " + v);
+                if (Vector3.Distance(vertices[i], v) < 10e-8) return true;
             }
 
             return false;
