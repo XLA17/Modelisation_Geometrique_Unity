@@ -15,11 +15,19 @@ namespace Modeling.MeshTools
     {
         public static int AddVertex(List<Vector3> vertices, Vector3 v)
         {
-            if (!vertices.Contains(v))
-            {
-                vertices.Add(v);
-            }
+            if (!Contains(vertices, v)) vertices.Add(v);
+
             return vertices.IndexOf(v);
+        }
+
+        public static bool Contains(List<Vector3> vertices, Vector3 v)
+        {
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                if (Vector3.Distance(vertices[i], v) < 0.001f) return true;
+            }
+
+            return false;
         }
 
         public static void AddTriangle(List<int> triangles, int vertex1Index, int vertex2Index, int vertex3Index)
