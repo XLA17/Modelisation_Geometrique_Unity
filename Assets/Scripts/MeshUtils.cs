@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -15,21 +16,27 @@ namespace Modeling.MeshTools
     {
         public static int AddVertex(List<Vector3> vertices, Vector3 v)
         {
-            if (!Contains(vertices, v)) vertices.Add(v);
-            //if (!vertices.Contains(v)) vertices.Add(v);
+            //if (!Contains(vertices, v)) vertices.Add(RoundVector3(v, 6));
+            Vector3 roundV = RoundVector3(v, 6);
+            if (!vertices.Contains(roundV)) vertices.Add(roundV);
 
-            return vertices.IndexOf(v);
+            return vertices.IndexOf(roundV);
         }
 
-        public static bool Contains(List<Vector3> vertices, Vector3 v)
-        {
-            for (int i = 0; i < vertices.Count; i++)
-            {
-                //Debug.Log("already here : "+ vertices[i] + "  :  " + v);
-                if (Vector3.Distance(vertices[i], v) < 10e-8) return true;
-            }
 
-            return false;
+        private static Vector3 RoundVector3(Vector3 v, int decimals)
+        {
+            return new Vector3(
+                RoundFloat(v.x, decimals),
+                RoundFloat(v.y, decimals),
+                RoundFloat(v.z, decimals)
+            );
+        }
+
+        private static float RoundFloat(float value, int decimals)
+        {
+            float factor = Mathf.Pow(10, decimals);
+            return Mathf.Round(value * factor) / factor;
         }
 
         public static void AddTriangle(List<int> triangles, int vertex1Index, int vertex2Index, int vertex3Index)
