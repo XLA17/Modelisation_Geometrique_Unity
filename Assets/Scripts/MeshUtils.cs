@@ -613,8 +613,10 @@ namespace Modeling.MeshTools
             {
                 vertices = vertices.ToArray(),
                 triangles = triangles.ToArray(),
-                normals = CalculateNormals(vertices, triangles).ToArray()
+                //normals = CalculateNormals(vertices, triangles).ToArray()
             };
+
+            mesh.RecalculateNormals();
 
             //mesh.RecalculateBounds();
 
