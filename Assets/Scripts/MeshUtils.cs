@@ -12,33 +12,60 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 namespace Modeling.MeshTools
 {
+    /// <summary>
+    /// Contains methods useful for mesh manipulation.
+    /// All methods are statics.
+    /// </summary>
     public class MeshUtils
     {
+        /// <summary>
+        /// Add a vertex to a list of vertices.
+        /// </summary>
+        /// <param name="vertices">The list of vertices.</param>
+        /// <param name="v">The vertex.</param>
+        /// <returns>The index of the vertex in the list.</returns>
         public static int AddVertex(List<Vector3> vertices, Vector3 v)
         {
-            //if (!Contains(vertices, v)) vertices.Add(RoundVector3(v, 6));
-            Vector3 roundV = RoundVector3(v, 6);
+            Vector3 roundV = RoundVector3(v, 6); // to avoid two points really close
             if (!vertices.Contains(roundV)) vertices.Add(roundV);
 
             return vertices.IndexOf(roundV);
         }
 
-
-        private static Vector3 RoundVector3(Vector3 v, int decimals)
+        /// <summary>
+        /// Round a <see cref="Vector3"> to a specific decimal.
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        private static Vector3 RoundVector3(Vector3 v, int d)
         {
             return new Vector3(
-                RoundFloat(v.x, decimals),
-                RoundFloat(v.y, decimals),
-                RoundFloat(v.z, decimals)
+                RoundFloat(v.x, d),
+                RoundFloat(v.y, d),
+                RoundFloat(v.z, d)
             );
         }
 
+        /// <summary>
+        /// Round a <see cref="float"> to a specific decimal.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="decimals"></param>
+        /// <returns></returns>
         private static float RoundFloat(float value, int decimals)
         {
             float factor = Mathf.Pow(10, decimals);
             return Mathf.Round(value * factor) / factor;
         }
 
+        /// <summary>
+        /// Add a triangle, composed of three vertices indexes to a triangles list.
+        /// </summary>
+        /// <param name="triangles">The triangles list.</param>
+        /// <param name="vertex1Index">The first vertex index.</param>
+        /// <param name="vertex2Index">The second vertex.</param>
+        /// <param name="vertex3Index">The third vertex.</param>
         public static void AddTriangle(List<int> triangles, int vertex1Index, int vertex2Index, int vertex3Index)
         {
             triangles.Add(vertex1Index);
@@ -46,6 +73,12 @@ namespace Modeling.MeshTools
             triangles.Add(vertex3Index);
         }
 
+        /// <summary>
+        /// Calculate normals of a triangles list
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="triangles"></param>
+        /// <returns></returns>
         public static List<Vector3> CalculateNormals(List<Vector3> vertices, List<int> triangles)
         {
             List<Vector3> normals = new();
@@ -76,6 +109,13 @@ namespace Modeling.MeshTools
 
             return normals;
         }
+
+        /// <summary>
+        /// Create a rectangular mesh.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         public static Mesh CreateRectMesh(float width, float height)
         {
             Mesh mesh = new();
@@ -101,6 +141,14 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Create a plane mesh.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="rows"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
         public static Mesh CreatePlaneMesh(float width, float height, int rows, int columns)
         {
             Mesh mesh = new();
@@ -138,6 +186,13 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Create a cylinder mesh.
+        /// </summary>
+        /// <param name="meridians"></param>
+        /// <param name="height"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
         public static Mesh CreateCylinderMesh(int meridians, float height, float radius)
         {
             Mesh mesh = new();
@@ -182,6 +237,14 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Create a truncated cylinder mesh.
+        /// </summary>
+        /// <param name="meridians"></param>
+        /// <param name="height"></param>
+        /// <param name="radius"></param>
+        /// <param name="meridiansTrunc"></param>
+        /// <returns></returns>
         public static Mesh CreateCylinderTruncMesh(int meridians, float height, float radius, int meridiansTrunc)
         {
             Mesh mesh = new();
@@ -231,6 +294,12 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Create a sphere mesh.
+        /// </summary>
+        /// <param name="parallels"></param>
+        /// <param name="meridians"></param>
+        /// <returns></returns>
         public static Mesh CreateSphereMesh(int parallels, int meridians)
         {
             Mesh mesh = new();
@@ -311,6 +380,14 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Create a truncated sphere mesh.
+        /// </summary>
+        /// <param name="parallels"></param>
+        /// <param name="meridians"></param>
+        /// <param name="parallelsTrunc"></param>
+        /// <param name="meridiansTrunc"></param>
+        /// <returns></returns>
         public static Mesh CreateSphereTruncMesh(int parallels, int meridians, int parallelsTrunc, int meridiansTrunc)
         {
             Mesh mesh = new();
@@ -433,6 +510,13 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Create a cone mesh.
+        /// </summary>
+        /// <param name="meridians"></param>
+        /// <param name="height"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
         public static Mesh CreateConeMesh(int meridians, float height, float radius)
         {
             Mesh mesh = new();
@@ -518,6 +602,12 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Save a mesh in specific folder.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="name"></param>
+        /// <param name="folderPath"></param>
         public static void GenerateMesh(Mesh mesh, string name, string folderPath = "Assets/Meshs")
         {
             string assetPath = $"{folderPath}/{name}.asset";
@@ -550,6 +640,11 @@ namespace Modeling.MeshTools
 
             Debug.Log($"Mesh sauvegardé : {assetPath}");
         }
+
+        /// <summary>
+        /// Create folders recursively.
+        /// </summary>
+        /// <param name="fullPath"></param>
         public static void CreateFoldersRecursively(string fullPath)
         {
             // fullPath must be a Unity path, ex : "Assets/Meshs/Objets/Data"
@@ -570,6 +665,12 @@ namespace Modeling.MeshTools
             }
         }
 
+        /// <summary>
+        /// Create a mesh.
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="triangles"></param>
+        /// <returns></returns>
         public static Mesh CreateSpecialMesh(List<Vector3> vertices, List<int> triangles)
         {
             Vector3 sum = Vector3.zero;
@@ -623,6 +724,12 @@ namespace Modeling.MeshTools
             return mesh;
         }
 
+        /// <summary>
+        /// Remove a certain amount of triangles from a mesh.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="triangleToRemoveCount"></param>
+        /// <returns></returns>
         public static Mesh RemoveTriangles(Mesh mesh, int triangleToRemoveCount)
         {
             List<int> newTrianglesList = mesh.triangles.ToList();
