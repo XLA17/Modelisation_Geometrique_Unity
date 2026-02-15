@@ -23,9 +23,9 @@ public class SphereVoxel : MonoBehaviour
 
         //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         //Destroy(sphere.GetComponent<Collider>());
-        Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, intersection);
+        //Octree octree = new(octreeCenter, octreeWidth, octreeDepth, spheres, hollow, intersection);
 
-        RecursiveInstantiate(octree.rootNode.nodes, coefWidthCube);
+        //RecursiveInstantiate(octree.rootNode.nodes, coefWidthCube);
 
         for (int i = 0; i < 20; i++)
         {
