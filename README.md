@@ -140,3 +140,11 @@ The result of the success of export the buddha without all his mesh triangles.
 <div align="center">
     <img src="Images/results/buddha_trunc.png" alt="Buddha truncated" width="300" style="border-radius: 10px;">
 </div>
+
+## **TP3**
+
+### Spatial Enumeration
+
+The object is to create a volumetric representation of a sphere.
+
+### 
